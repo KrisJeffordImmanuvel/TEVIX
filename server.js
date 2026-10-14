@@ -5,12 +5,13 @@ const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { createStore } = require('./store');
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
-const DB_FILE = path.join(DATA_DIR, 'db.json');
+const DATABASE_URL = process.env.DATABASE_URL || '';
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const MAX_BODY_BYTES = 16 * 1024;
 
@@ -27,40 +28,6 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
   '.webmanifest': 'application/manifest+json'
 };
-
-// ---------- Storage ----------
-
-let db = { interestCount: 0, applications: [] };
-let writeQueue = Promise.resolve();
-
-function loadDb() {
-  try {
-    const raw = fs.readFileSync(DB_FILE, 'utf8');
-    const parsed = JSON.parse(raw);
-    db = {
-      interestCount: Number(parsed.interestCount) || 0,
-      applications: Array.isArray(parsed.applications) ? parsed.applications : []
-    };
-  } catch (err) {
-    if (err.code !== 'ENOENT') {
-      console.error(`Could not read ${DB_FILE}, starting empty:`, err.message);
-    }
-  }
-}
-
-// Writes are serialised and atomic (write to temp file, then rename).
-function saveDb() {
-  const snapshot = JSON.stringify(db, null, 2);
-  writeQueue = writeQueue
-    .catch(() => {})
-    .then(async () => {
-      await fsp.mkdir(DATA_DIR, { recursive: true });
-      const tmp = `${DB_FILE}.${process.pid}.tmp`;
-      await fsp.writeFile(tmp, snapshot);
-      await fsp.rename(tmp, DB_FILE);
-    });
-  return writeQueue;
-}
 
 // ---------- Helpers ----------
 
@@ -133,12 +100,10 @@ async function handleApi(req, res, pathname) {
 
   if (pathname === '/api/interest') {
     if (req.method === 'GET') {
-      return sendJson(res, 200, { count: db.interestCount });
+      return sendJson(res, 200, { count: await store.getInterest() });
     }
     if (req.method === 'POST') {
-      db.interestCount += 1;
-      await saveDb();
-      return sendJson(res, 200, { count: db.interestCount });
+      return sendJson(res, 200, { count: await store.incrementInterest() });
     }
     return sendJson(res, 405, { error: 'Method not allowed.' });
   }
@@ -148,21 +113,15 @@ async function handleApi(req, res, pathname) {
       const { app, error } = validateApplication(await readJsonBody(req));
       if (error) return sendJson(res, 400, { error });
 
-      const duplicate = db.applications.some(
-        (a) => a.email.toLowerCase() === app.email.toLowerCase()
-      );
-      if (duplicate) {
+      const created = await store.addApplication(app);
+      if (!created) {
         return sendJson(res, 409, { error: 'An application with this email has already been received.' });
       }
-
-      const record = { id: crypto.randomUUID(), ...app, createdAt: new Date().toISOString() };
-      db.applications.push(record);
-      await saveDb();
-      return sendJson(res, 201, { id: record.id });
+      return sendJson(res, 201, { id: created.id });
     }
     if (req.method === 'GET') {
       if (!isAdmin(req)) return sendJson(res, 401, { error: 'Unauthorized.' });
-      return sendJson(res, 200, { applications: db.applications });
+      return sendJson(res, 200, { applications: await store.listApplications() });
     }
     return sendJson(res, 405, { error: 'Method not allowed.' });
   }
@@ -244,12 +203,20 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-loadDb();
+const store = createStore({ databaseUrl: DATABASE_URL, dataDir: DATA_DIR });
 
 if (require.main === module) {
-  server.listen(PORT, HOST, () => {
-    console.log(`IEEE TEMS web app running at http://localhost:${PORT}`);
-  });
+  store
+    .init()
+    .then(() => {
+      server.listen(PORT, HOST, () => {
+        console.log(`IEEE TEMS web app running at http://localhost:${PORT} (storage: ${store.kind})`);
+      });
+    })
+    .catch((err) => {
+      console.error('Could not initialise storage:', err.message);
+      process.exit(1);
+    });
 }
 
-module.exports = { server };
+module.exports = { server, store };
