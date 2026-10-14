@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The IEEE TEMS Student Chapter helps students combine engineering knowledge with leadership, planning and business skills.">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>IEEE TEMS Student Chapter</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+
+  <header>
+    <h2>IEEE TEMS</h2>
+    <nav data-check="nav-links">
+      <a href="#about">About</a>
+      <a href="#features">What You Gain</a>
+      <a href="#benefits">Benefits</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Join Us</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section id="home">
+      <h1>Technology Skills. Management Mindset.</h1>
+      <p>The IEEE TEMS Student Chapter helps students combine engineering knowledge with leadership, planning and business skills that employers look for.</p>
+      <button type="button" id="cta-btn" data-check="cta-button">Join the Chapter</button>
+    </section>
+
+    <section id="about">
+      <h2>About IEEE TEMS</h2>
+      <p>TEMS stands for Technology and Engineering Management Society. Our student chapter is built for learners who want to understand how technology projects are planned, led and turned into real products.</p>
+      <p>You do not need prior experience. If you are curious about how great ideas become successful ventures, you belong here.</p>
+      <p>Interested in this chapter?</p>
+      <button type="button" id="interest-btn" data-check="counter-button">I'm interested</button>
+      <p>Students interested so far: <strong id="interest-count" aria-live="polite">0</strong></p>
+    </section>
+
+    <section id="features">
+      <h2>What You Gain</h2>
+      <article>
+        <h3>Management Skills</h3>
+        <p>Learn how to plan projects, manage teams and make decisions, skills that go beyond coding and circuits.</p>
+      </article>
+      <article>
+        <h3>A Professional Network</h3>
+        <p>Meet seniors, mentors and industry professionals who can guide your learning and open doors for your career.</p>
+      </article>
+      <article>
+        <h3>Career Readiness</h3>
+        <p>Build a stronger resume with leadership roles, teamwork experience and a global professional community behind you.</p>
+      </article>
+    </section>
+
+    <section id="benefits">
+      <h2>Student Benefits at a Glance</h2>
+      <table data-check="benefits-table">
+        <thead>
+          <tr>
+            <th>Benefit</th>
+            <th>What You Get</th>
+            <th>Skill Area</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Leadership Experience</td>
+            <td>Chances to lead teams and take responsibility</td>
+            <td>Leadership</td>
+          </tr>
+          <tr>
+            <td>Project Management</td>
+            <td>Practical exposure to planning and delivery</td>
+            <td>Management</td>
+          </tr>
+          <tr>
+            <td>Entrepreneurship</td>
+            <td>Guidance on turning ideas into ventures</td>
+            <td>Innovation</td>
+          </tr>
+          <tr>
+            <td>Industry Networking</td>
+            <td>Connections with professionals and alumni</td>
+            <td>Communication</td>
+          </tr>
+          <tr>
+            <td>Mentorship</td>
+            <td>Support from seniors and experienced members</td>
+            <td>Growth</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="faq">
+      <h2>Frequently Asked Questions</h2>
+      <div data-check="faq-list">
+        <details>
+          <summary>Who can join the chapter?</summary>
+          <p>Any student who is interested in technology and how it is managed. Prior experience is not required.</p>
+        </details>
+        <details>
+          <summary>Will this help my career?</summary>
+          <p>Yes. Leadership, teamwork and project experience stand out on a resume and in interviews.</p>
+        </details>
+        <details>
+          <summary>How much time does it need?</summary>
+          <p>Only a few hours a month. Take part as much as your schedule allows.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Join Us</h2>
+      <form id="signup-form" data-check="signup-form" novalidate>
+        <p>
+          <label for="name">Name</label><br>
+          <input type="text" id="name" name="name" autocomplete="name" maxlength="100">
+        </p>
+        <p>
+          <label for="email">Email</label><br>
+          <input type="email" id="email" name="email" autocomplete="email" maxlength="254">
+        </p>
+        <p>
+          <label for="year">Year of study</label><br>
+          <select id="year" name="year">
+            <option value="">Select</option>
+            <option>1st year</option>
+            <option>2nd year</option>
+            <option>3rd year</option>
+            <option>4th year</option>
+          </select>
+        </p>
+        <p>
+          <label for="message">Why do you want to join?</label><br>
+          <textarea id="message" name="message" rows="4" maxlength="2000"></textarea>
+        </p>
+        <button type="submit">Send Application</button>
+        <p id="form-status" role="status"></p>
+      </form>
+    </section>
+
+  </main>
+
+  <footer data-check="footer">
+    <p>&copy; 2026 IEEE TEMS Student Chapter. All rights reserved.</p>
+    <p>Contact: tems.chapter@example.com</p>
+  </footer>
+
+</body>
+</html>
